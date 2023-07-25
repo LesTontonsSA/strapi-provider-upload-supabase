@@ -8,7 +8,7 @@ interface BucketInfo {
 export function isUrlFromBucket(fileUrl: string, bucketName: string, apiUrl = '') {
   const url = new URL(fileUrl);
 
-  const matches = url.host.includes(apiUrl);
+  const matches = apiUrl.includes(url.host);
   if (!matches) {
     return { err: `Invalid S3 url: hostname does not appear to be a valid S3 endpoint: ${url}` };
   }
