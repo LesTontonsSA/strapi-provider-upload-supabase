@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const supabase_js_1 = require("@supabase/supabase-js");
 const promises_1 = __importDefault(require("fs/promises"));
+const utils_1 = require("./utils");
 function getKey(directory, file) {
     const path = file.path ? `${file.path}/` : "";
     const fname = file.name.replace(/\.[^/.]+$/, "");
@@ -87,6 +88,12 @@ module.exports = {
             //checkFileSize not implemented
             getSignedUrl: (file) => new Promise(async (resolve, reject) => {
                 var _a;
+                // Do not sign the url if it does not come from the same bucket.
+                const fileOrigin = (0, utils_1.isUrlFromBucket)(file.url, bucket, apiUrl);
+                if (!fileOrigin.bucket) {
+                    console.warn(fileOrigin.err);
+                    resolve({ url: file.url });
+                }
                 const fileKey = getKey(clientDirectory, file);
                 const result = await supabase.storage
                     .from(clientBucket)
@@ -95,7 +102,8 @@ module.exports = {
                     transform: options === null || options === void 0 ? void 0 : options.transform,
                 });
                 if (result.error) {
-                    reject(result.error);
+                    console.error(result.error);
+                    resolve({ url: file.url });
                     return;
                 }
                 resolve({ url: ((_a = result.data) === null || _a === void 0 ? void 0 : _a.signedUrl) || '' });

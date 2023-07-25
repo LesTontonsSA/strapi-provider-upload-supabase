@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient, SupabaseClientOptions } from "@supabase/supabase-js";
 import { TransformOptions } from "@supabase/storage-js/dist/module/lib/types";
 import fs from "fs/promises";
+import {isUrlFromBucket} from "./utils";
 
 interface File {
   hash: number;
@@ -123,6 +124,12 @@ export = {
       }),
       //checkFileSize not implemented
       getSignedUrl: (file: File) => new Promise<{ url: string }>(async (resolve, reject) => {
+        // Do not sign the url if it does not come from the same bucket.
+        const fileOrigin = isUrlFromBucket(file.url, bucket, apiUrl)
+        if (!fileOrigin.bucket) {
+          console.warn(fileOrigin.err)
+          resolve({ url: file.url });
+        }
         const fileKey = getKey(clientDirectory, file);
         const result = await supabase.storage
           .from(clientBucket)
@@ -132,7 +139,8 @@ export = {
           });
 
         if (result.error) {
-          reject(result.error);
+          console.error(result.error);
+          resolve({ url: file.url })
           return;
         }
 
