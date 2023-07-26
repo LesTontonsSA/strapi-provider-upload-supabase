@@ -1,33 +1,7 @@
 import { createClient, SupabaseClient, SupabaseClientOptions } from "@supabase/supabase-js";
-import { TransformOptions } from "@supabase/storage-js/dist/module/lib/types";
 import fs from "fs/promises";
 import {isUrlFromBucket} from "./utils";
-
-interface File {
-  hash: number;
-  buffer: Buffer;
-  mime: string;
-  name: string;
-  ext: string;
-  path?: string;
-  url?: string;
-  stream?: NodeJS.ReadableStream;
-}
-
-interface Config {
-  apiUrl: string;
-  apiKey: string;
-  bucket?: string;
-  directory?: string;
-  options?: {
-    dynamic_directory?: boolean;
-    sizeLimit?: number;
-    expiryMinutes?: number;
-    download?: string | boolean;
-    transform?: TransformOptions;
-    [key: string]: any;
-  };
-}
+import {Config, File} from "./types";
 
 function getKey(directory: string, file: File): string {
   const path = file.path ? `${file.path}/` : "";
@@ -125,7 +99,7 @@ export = {
       //checkFileSize not implemented
       getSignedUrl: (file: File) => new Promise<{ url: string }>(async (resolve, reject) => {
         // Do not sign the url if it does not come from the same bucket.
-        const fileOrigin = isUrlFromBucket(file.url, bucket, apiUrl)
+        const fileOrigin = isUrlFromBucket(file, bucket, apiUrl)
         if (!fileOrigin.bucket) {
           console.warn(fileOrigin.err)
           resolve({ url: file.url });

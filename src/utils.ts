@@ -1,14 +1,15 @@
 //const ENDPOINT_PATTERN = /^(.+\.)?s3[.-]([a-z0-9-]+)\./;
 
+import {File} from "./types";
+
 interface BucketInfo {
   bucket?: string | null;
   err?: string;
 }
 
-export function isUrlFromBucket(fileUrl: string, bucketName: string, apiUrl = '') {
-  const url = new URL(fileUrl);
-
-  const matches = apiUrl.includes(url.host);
+export function isUrlFromBucket(file: File, bucketName: string, apiUrl = '') {
+  const url = new URL(file.url);
+  const matches = file.url.includes(apiUrl);
   if (!matches) {
     return { err: `Invalid S3 url: hostname does not appear to be a valid S3 endpoint: ${url}` };
   }

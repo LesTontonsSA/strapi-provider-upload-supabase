@@ -89,7 +89,7 @@ module.exports = {
             getSignedUrl: (file) => new Promise(async (resolve, reject) => {
                 var _a;
                 // Do not sign the url if it does not come from the same bucket.
-                const fileOrigin = (0, utils_1.isUrlFromBucket)(file.url, bucket, apiUrl);
+                const fileOrigin = (0, utils_1.isUrlFromBucket)(file, bucket, apiUrl);
                 if (!fileOrigin.bucket) {
                     console.warn(fileOrigin.err);
                     resolve({ url: file.url });
