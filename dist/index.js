@@ -61,7 +61,7 @@ const upload = async (file, supabase, apiUrl, clientBucket, clientDirectory) => 
 });
 module.exports = {
     init(providerOptions) {
-        const { apiUrl, apiKey, bucket, directory, options } = providerOptions;
+        const { apiUrl, apiKey, bucket, directory, privateBucket, options } = providerOptions;
         const clientBucket = bucket || "strapi-uploads";
         let clientDirectory = (directory || "").replace(/(^\/)|(\/$)/g, "");
         const year = new Date().getFullYear().toString();
@@ -108,7 +108,7 @@ module.exports = {
                 }
                 resolve({ url: ((_a = result.data) === null || _a === void 0 ? void 0 : _a.signedUrl) || '' });
             }),
-            isPrivate: () => true,
+            isPrivate: () => privateBucket,
         };
     },
 };

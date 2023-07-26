@@ -64,7 +64,7 @@ const upload = async (file, supabase, apiUrl, clientBucket, clientDirectory) => 
 
 export = {
   init(providerOptions: Config) {
-    const { apiUrl, apiKey, bucket, directory, options } = providerOptions;
+    const { apiUrl, apiKey, bucket, directory, privateBucket,options } = providerOptions;
 
     const clientBucket = bucket || "strapi-uploads";
     let clientDirectory = (directory || "").replace(/(^\/)|(\/$)/g, "");
@@ -120,7 +120,7 @@ export = {
 
         resolve({ url: result.data?.signedUrl || '' });
       }),
-      isPrivate: () => true,
+      isPrivate: () => privateBucket,
     };
   },
 };

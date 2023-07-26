@@ -6,19 +6,20 @@ This is a Strapi provider for uploading files to Supabase storage. The provider 
 
 The following parameters are used by the provider:
 
-- **apiUrl** : Your Supabase API Url
-- **apiKey** : Your Supabase API Key
-- **bucket** : Your Supabase storage bucket. Defaults to 'strapi-uploads' if not provided.
-- **directory** : Directory inside your Supabase storage bucket. Optional and dynamic by default.
-- **options** : Additional options for the Supabase client and this provider.
+- **apiUrl** : `string` Your Supabase API Url
+- **apiKey** : `string` Your Supabase API Key
+- **bucket** : `string` Your Supabase storage bucket. Defaults to 'strapi-uploads' if not provided.
+- **directory** : `string` Directory inside your Supabase storage bucket. Optional and dynamic by default.
+- **privateBucket** : `boolean` use authentication and signed url.
+- **options** : `object` Additional options for the Supabase client and this provider.
 
 The `options` parameter can include:
 
-- **dynamic_directory** : Create dynamic directories based on the current year and month. Defaults to true if `directory` is not provided.
-- **sizeLimit** : The maximum file size for uploads in bytes. Defaults to Infinity.
-- **expiryMinutes** : The number of minutes until a signed URL expires. Defaults to 60.
-- **download** : Whether to force the browser to download the file. This can be a boolean or a filename.
-- **transform** : Transformation parameters for the file.
+- **dynamic_directory** : `string` Create dynamic directories based on the current year and month. Defaults to true if `directory` is not provided.
+- **sizeLimit** : `int` or `"infinity"` The maximum file size for uploads in bytes. Defaults to Infinity.
+- **expiryMinutes** : `int` The number of minutes until a signed URL expires. Defaults to 60.
+- **download** : `boolean` or `string` Whether to force the browser to download the file. This can be a boolean or a filename.
+- **transform** : `object` Transformation parameters for the file.
 
 See the Supabase documentation for more information on these options.
 
@@ -46,6 +47,7 @@ module.exports = ({ env }) => ({
         apiKey: env("SUPABASE_API_KEY"),
         bucket: env("SUPABASE_BUCKET"),
         directory: env("SUPABASE_DIRECTORY"),
+        privateBucket: env.bool("SUPABASE_PRIVATE_BUCKET", false),
         options: {
           dynamic_directory: env.bool("SUPABASE_DYNAMIC_DIRECTORY", true),
           sizeLimit: env.int("SUPABASE_SIZE_LIMIT", Infinity),
@@ -54,10 +56,12 @@ module.exports = ({ env }) => ({
           transform: env.json("SUPABASE_TRANSFORM", {}),
         },
       },
+      /* WIP S3 upload/uploadStream and delete options
       actionOptions: {
         upload: {},
         delete: {},
       },
+      */
     },
   },
   // ...
@@ -72,7 +76,8 @@ Create a `.env` file in your root directory. Replace `<Your Supabase url>` and `
 SUPABASE_API_URL="<Your Supabase url>"
 SUPABASE_API_KEY="<Your Supabase api key>"
 SUPABASE_BUCKET="strapi-uploads"
-SUPABASE_DIRECTORY=""
+SUPABASE_DIRECTORY="<Set to empty string if SUPABASE_DYNAMIC_DIRECTORY is true>"
+SUPABASE_PRIVATE_BUCKET="<Set to true for private bucket>"
 SUPABASE_DYNAMIC_DIRECTORY=true
 SUPABASE_SIZE_LIMIT=Infinity
 SUPABASE_EXPIRY_MINUTES=60

@@ -25,6 +25,7 @@ export interface Config {
   apiKey: string;
   bucket?: string;
   directory?: string;
+  privateBucket?: boolean;
   options?: {
     dynamic_directory?: boolean;
     sizeLimit?: number;
